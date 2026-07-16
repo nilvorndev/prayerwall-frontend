@@ -1,0 +1,94 @@
+---
+export interface Props {
+  search: string;
+  tags: string;
+  createdAfter: string;
+  createdBefore: string;
+  ordering: string;
+  hasFilters: boolean;
+  hasAdvanced: boolean;
+}
+
+const { search, tags, createdAfter, createdBefore, ordering, hasFilters, hasAdvanced } = Astro.props;
+---
+
+<form id="prayer-filter-form" method="get" class="card p-4 md:p-5">
+  <div class="space-y-4">
+    <div class="grid gap-4 md:grid-cols-[1fr_auto_auto_auto] md:items-end">
+      <div class="min-w-0">
+        <label for="search" class="label">Search</label>
+        <input id="search" name="search" value={search} type="search"
+          placeholder="Search by keyword or title"
+          class="input"
+        />
+      </div>
+      <div>
+        <label for="ordering" class="label">Sort</label>
+        <select id="ordering" name="ordering"
+          class="input min-w-[9rem]"
+        >
+          <option value="-created_at" selected={ordering === "-created_at"}>Latest</option>
+          <option value="created_at" selected={ordering === "created_at"}>Oldest</option>
+          <option value="-prayer_count" selected={ordering === "-prayer_count"}>Most prayed</option>
+        </select>
+      </div>
+      <div>
+        <label class="label opacity-0">Toggle</label>
+        <button type="button" id="advanced-toggle"
+          class="btn btn-outline btn-sm"
+        >
+          Advanced
+        </button>
+      </div>
+      <div>
+        <label class="label opacity-0">Submit</label>
+        <button type="submit"
+          class="btn btn-primary btn-sm"
+        >
+          Apply
+        </button>
+      </div>
+    </div>
+
+    <div id="advanced-filters" class="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end" class:list={{ hidden: !hasAdvanced }}>
+      <div class="min-w-0">
+        <label for="tags" class="label">Tags</label>
+        <input id="tags" name="tags" value={tags} type="text"
+          placeholder="healing, peace, family"
+          class="input"
+        />
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="min-w-0">
+          <label for="created_after" class="label">From</label>
+          <input id="created_after" name="created_after" value={createdAfter} type="date"
+            class="input"
+          />
+        </div>
+        <div class="min-w-0">
+          <label for="created_before" class="label">To</label>
+          <input id="created_before" name="created_before" value={createdBefore} type="date"
+            class="input"
+          />
+        </div>
+      </div>
+      <div class="flex gap-2 pt-1 md:pt-0">
+        {hasFilters && (
+          <a href="/prayers" class="btn btn-outline btn-sm">
+            Clear
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  const toggle = document.getElementById("advanced-toggle");
+  const panel = document.getElementById("advanced-filters");
+  if (toggle && panel) {
+    toggle.addEventListener("click", () => {
+      panel.classList.toggle("hidden");
+    });
+  }
+</script>

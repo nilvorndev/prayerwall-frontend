@@ -1,0 +1,13 @@
+---
+import Badge from "../ui/Badge.astro";
+
+export interface Props {
+  isPublic: boolean;
+}
+
+const { isPublic } = Astro.props;
+---
+
+<Badge tone={isPublic ? "success" : "warning"}>
+  {isPublic ? "Public" : "Private"}
+</Badge>
