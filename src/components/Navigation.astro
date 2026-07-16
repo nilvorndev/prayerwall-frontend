@@ -1,0 +1,205 @@
+---
+import { getDisplayName } from "@/lib/auth/session";
+
+const session = Astro.locals.session;
+const path = Astro.url.pathname;
+
+interface NavLink {
+  href: string;
+  label: string;
+  icon?: string;
+}
+
+const publicLinks: NavLink[] = [
+  { href: "/prayers", label: "Prayer Feed" },
+];
+
+const memberLinks: NavLink[] = [
+  { href: "/prayers/create", label: "Submit Request" },
+  { href: "/my/requests", label: "My Requests" },
+  { href: "/my/prayers", label: "My Prayers" },
+];
+
+const adminLinks: NavLink[] = [
+  { href: "/admin", label: "Admin" },
+];
+
+function isActive(href: string) {
+  return path === href;
+}
+---
+
+<nav class="sticky top-0 z-50 glass border-b border-(--color-line-light)">
+  <div class="mx-auto max-w-[72rem] px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between gap-4">
+      {/* Logo */}
+      <a href="/" class="flex shrink-0 items-center gap-2.5 group">
+        <img src="/logo.png" alt="Prayer Wall" class="h-12 w-12 object-contain transition-transform group-hover:scale-105" />
+        <span class="text-base font-semibold text-(--color-text) hidden sm:block">Prayer Wall</span>
+      </a>
+
+      {/* Desktop nav */}
+      <div class="hidden md:flex items-center gap-1">
+        {[
+          ...publicLinks,
+          ...(session.isAuthenticated ? memberLinks : []),
+          ...(session.isAdmin ? adminLinks : []),
+        ].map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              "px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+              isActive(link.href)
+                ? "text-(--color-primary) bg-[color-mix(in_srgb,var(--color-primary)_8%,var(--color-bg-elevated))]"
+                : "text-(--color-text-secondary) hover:text-(--color-text) hover:bg-(--color-surface)",
+            ]}
+            aria-current={isActive(link.href) ? "page" : undefined}
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+
+      {/* Right side */}
+      <div class="flex items-center gap-2">
+        {/* Dark mode toggle */}
+        <button
+          type="button"
+          class="theme-toggle"
+          id="theme-toggle"
+          aria-label="Toggle dark mode"
+        >
+          <svg class="hidden dark-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+          </svg>
+          <svg class="light-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+        </button>
+
+        {/* Auth buttons */}
+        {session.isAuthenticated ? (
+          <div class="hidden sm:flex items-center gap-2">
+            <a href="/account" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-(--color-text-secondary) rounded-lg hover:bg-(--color-surface) transition-colors">
+              <span class="flex h-7 w-7 items-center justify-center rounded-full bg-(--color-primary) text-[0.7rem] font-semibold text-white">
+                {session.user ? getDisplayName(session.user).charAt(0).toUpperCase() : "A"}
+              </span>
+              <span class="hidden lg:block">{session.user ? getDisplayName(session.user) : "Account"}</span>
+            </a>
+            <a href="/api/auth/logout" class="btn btn-ghost btn-sm">
+              Log out
+            </a>
+          </div>
+        ) : (
+          <div class="hidden sm:flex items-center gap-2">
+            <a href="/auth/login" class="btn btn-ghost btn-sm">
+              Log in
+            </a>
+            <a href="/auth/register" class="btn btn-primary btn-sm">
+              Get Started
+            </a>
+          </div>
+        )}
+
+        {/* Mobile menu button */}
+        <button
+          type="button"
+          class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg border border-(--color-line) bg-(--color-bg-elevated) text-(--color-text-secondary) hover:bg-(--color-surface) transition-colors"
+          id="mobile-menu-btn"
+          aria-label="Toggle menu"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="menu-icon">
+            <line x1="4" y1="6" x2="20" y2="6"></line>
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="close-icon hidden">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    {/* Mobile menu */}
+    <div id="mobile-menu" class="hidden md:hidden border-t border-(--color-line-light) py-4 animate-fade-in-down">
+      <div class="space-y-1">
+        {[
+          ...publicLinks,
+          ...(session.isAuthenticated ? memberLinks : []),
+          ...(session.isAdmin ? adminLinks : []),
+        ].map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              "block px-3 py-2.5 text-sm font-medium rounded-lg transition-colors",
+              isActive(link.href)
+                ? "text-(--color-primary) bg-[color-mix(in_srgb,var(--color-primary)_8%,var(--color-bg-elevated))]"
+                : "text-(--color-text-secondary) hover:text-(--color-text) hover:bg-(--color-surface)",
+            ]}
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+
+      <div class="mt-4 border-t border-(--color-line-light) pt-4">
+        {session.isAuthenticated ? (
+          <div class="flex items-center justify-between">
+            <a href="/account" class="flex items-center gap-2 text-sm font-medium text-(--color-text)">
+              <span class="flex h-7 w-7 items-center justify-center rounded-full bg-(--color-primary) text-[0.7rem] font-semibold text-white">
+                {session.user ? getDisplayName(session.user).charAt(0).toUpperCase() : "A"}
+              </span>
+              {session.user ? getDisplayName(session.user) : "Account"}
+            </a>
+            <a href="/api/auth/logout" class="btn btn-ghost btn-sm">Log out</a>
+          </div>
+        ) : (
+          <div class="flex gap-2">
+            <a href="/auth/login" class="btn btn-outline btn-sm flex-1">Log in</a>
+            <a href="/auth/register" class="btn btn-primary btn-sm flex-1">Get Started</a>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const toggle = document.getElementById("theme-toggle");
+  const menuBtn = document.getElementById("mobile-menu-btn");
+  const menu = document.getElementById("mobile-menu");
+  const menuIcon = menuBtn?.querySelector(".menu-icon");
+  const closeIcon = menuBtn?.querySelector(".close-icon");
+
+  toggle?.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("pw-theme", next);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", next === "dark" ? "#0F172A" : "#FAFAF8");
+  });
+
+  menuBtn?.addEventListener("click", () => {
+    const isOpen = !menu?.classList.contains("hidden");
+    menu?.classList.toggle("hidden");
+    menuIcon?.classList.toggle("hidden");
+    closeIcon?.classList.toggle("hidden");
+    menuBtn?.setAttribute("aria-expanded", String(!isOpen));
+  });
+
+  // Update theme toggle icons based on current theme
+  function updateToggleIcons() {
+    const theme = document.documentElement.getAttribute("data-theme");
+    const darkIcons = document.querySelectorAll(".dark-icon");
+    const lightIcons = document.querySelectorAll(".light-icon");
+    if (theme === "dark") {
+      darkIcons.forEach((el) => (el as HTMLElement).style.display = "none");
+      lightIcons.forEach((el) => (el as HTMLElement).style.display = "block");
+    } else {
+      darkIcons.forEach((el) => (el as HTMLElement).style.display = "block");
+      lightIcons.forEach((el) => (el as HTMLElement).style.display = "none");
+    }
+  }
+  updateToggleIcons();
+</script>
