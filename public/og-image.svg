@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1d4ed8"/>
+      <stop offset="100%" style="stop-color:#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="200" cy="150" r="300" fill="rgba(255,255,255,0.04)"/>
+  <circle cx="1000" cy="500" r="250" fill="rgba(255,255,255,0.03)"/>
+  <circle cx="600" cy="315" r="400" fill="rgba(255,255,255,0.02)"/>
+  <text x="80" y="260" font-family="'Space Grotesk','Inter',sans-serif" font-size="72" font-weight="700" fill="white">Prayer Wall</text>
+  <text x="80" y="330" font-family="'Inter',sans-serif" font-size="32" font-weight="400" fill="rgba(255,255,255,0.85)">Share your prayers. Pray for others.</text>
+  <rect x="80" y="370" width="80" height="4" rx="2" fill="rgba(255,255,255,0.5)"/>
+  <text x="80" y="540" font-family="'Inter',sans-serif" font-size="22" font-weight="400" fill="rgba(255,255,255,0.6)">prayerwall.space</text>
+</svg>
