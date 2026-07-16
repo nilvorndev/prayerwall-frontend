@@ -1,0 +1,17 @@
+---
+export interface Props {
+  lines?: number;
+  class?: string;
+}
+
+const { lines = 3, class: className = "" } = Astro.props;
+---
+
+<div class:list={["space-y-3", className]}>
+  {Array.from({ length: lines }).map((_, i) => (
+    <div
+      class="skeleton h-4 rounded-lg"
+      style={`width: ${i === lines - 1 ? "60%" : "100%"}; background: var(--color-surface);`}
+    />
+  ))}
+</div>

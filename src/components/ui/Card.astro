@@ -1,0 +1,16 @@
+---
+export interface Props {
+  padded?: boolean;
+  class?: string;
+}
+
+const { padded = true, class: className = "" } = Astro.props;
+---
+
+<div class:list={[
+  "card",
+  padded && "p-5 sm:p-6",
+  className,
+]}>
+  <slot />
+</div>

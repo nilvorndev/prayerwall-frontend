@@ -1,0 +1,32 @@
+---
+export interface Props {
+  id: string;
+  title?: string;
+  message?: string;
+  confirmLabel?: string;
+}
+
+const {
+  id,
+  title = "Confirm action",
+  message = "This action cannot be undone.",
+  confirmLabel = "Confirm",
+} = Astro.props;
+---
+
+<dialog id={id}
+  class="rounded-2xl border border-(--color-line) bg-(--color-bg-elevated) p-0 backdrop:bg-black/40 shadow-xl"
+>
+  <form method="dialog" class="min-w-[min(90vw,24rem)] p-6">
+    <h3 class="text-base font-semibold text-(--color-text)">{title}</h3>
+    <p class="mt-2 text-sm leading-6 text-(--color-text-secondary)">{message}</p>
+    <div class="mt-6 flex justify-end gap-2">
+      <button value="cancel" class="btn btn-outline btn-sm">
+        Cancel
+      </button>
+      <button value="confirm" class="btn btn-danger btn-sm">
+        {confirmLabel}
+      </button>
+    </div>
+  </form>
+</dialog>

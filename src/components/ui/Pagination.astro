@@ -1,0 +1,40 @@
+---
+export interface Props {
+  previousUrl?: string | null;
+  nextUrl?: string | null;
+  current?: number;
+  totalPages?: number;
+}
+
+const { previousUrl, nextUrl, current, totalPages } = Astro.props;
+---
+
+<nav class="flex items-center justify-between gap-4" aria-label="Pagination">
+  <div>
+    {previousUrl ? (
+      <a href={previousUrl} class="btn btn-outline btn-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        Previous
+      </a>
+    ) : <span />}
+  </div>
+
+  {current && totalPages && (
+    <p class="text-sm text-(--color-text-secondary)">
+      Page <span class="font-medium text-(--color-text)">{current}</span> of <span class="font-medium text-(--color-text)">{totalPages}</span>
+    </p>
+  )}
+
+  <div>
+    {nextUrl ? (
+      <a href={nextUrl} class="btn btn-outline btn-sm">
+        Next
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </a>
+    ) : <span />}
+  </div>
+</nav>
