@@ -1,0 +1,25 @@
+---
+import ErrorState from "../ui/ErrorState.astro";
+import type { SessionState } from "@/lib/auth/session";
+
+export interface Props {
+  session: SessionState;
+  title?: string;
+  message?: string;
+}
+
+const { session, title = "Admin access required", message = "Only administrators can view this section." } = Astro.props;
+---
+
+{
+  session.isAdmin ? (
+    <slot />
+  ) : (
+    <ErrorState
+      title={title}
+      message={message}
+      actionHref="/prayers"
+      actionLabel="Back to feed"
+    />
+  )
+}

@@ -1,0 +1,38 @@
+---
+import ErrorState from "../ui/ErrorState.astro";
+import type { SessionState } from "@/lib/auth/session";
+
+export interface Props {
+  session: SessionState;
+  requires?: "registered" | "authenticated" | "guest";
+  title?: string;
+  message?: string;
+}
+
+const {
+  session,
+  requires = "authenticated",
+  title = "Access restricted",
+  message = "This area requires authentication.",
+} = Astro.props;
+
+const allowed =
+  requires === "guest"
+    ? session.mode === "guest"
+    : requires === "registered"
+      ? session.mode === "registered"
+      : session.isAuthenticated;
+---
+
+{
+  allowed ? (
+    <slot />
+  ) : (
+    <ErrorState
+      title={title}
+      message={message}
+      actionHref={session.mode === "guest" ? "/auth/login" : "/account"}
+      actionLabel={session.mode === "guest" ? "Log in" : "View account"}
+    />
+  )
+}
