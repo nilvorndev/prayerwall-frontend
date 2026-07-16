@@ -1,0 +1,41 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import PrayerManager from "@/components/PrayerManager.svelte";
+import ErrorState from "@/components/ui/ErrorState.astro";
+import { ApiClient } from "@/lib/api/client";
+import { listPrayersByToken } from "@/lib/api/prayers";
+import type { PrayerRequest } from "@/lib/types";
+
+const token = Astro.params.token!;
+const client = new ApiClient();
+let prayers: PrayerRequest[] = [];
+let error = "";
+
+try {
+  const result = await listPrayersByToken(client, token);
+  prayers = result.results;
+} catch (err: any) {
+  error = err.detail || "Unable to load your requests. The management token may be invalid or expired.";
+}
+---
+
+<BaseLayout title="Manage Requests" description="Manage your prayer requests using your management token">
+  <div class="space-y-6">
+    <PageHeader title="Manage your requests" description="Edit or delete your prayer requests using your management token." />
+
+    {error ? (
+      <ErrorState title="Unable to load requests" message={error} actionHref="/prayers" actionLabel="Browse requests" />
+    ) : (
+      <div class="card p-4 md:p-6">
+        <PrayerManager
+          prayers={prayers}
+          allowEdit={true}
+          allowDelete={true}
+          emptyLabel="You have not created any prayer requests yet."
+          client:load
+        />
+      </div>
+    )}
+  </div>
+</BaseLayout>

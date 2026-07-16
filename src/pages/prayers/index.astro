@@ -1,0 +1,116 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import PrayerCard from "@/components/prayers/PrayerCard.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
+import ErrorState from "@/components/ui/ErrorState.astro";
+import Pagination from "@/components/ui/Pagination.astro";
+import { ApiClient } from "@/lib/api/client";
+import { listPrayers } from "@/lib/api/prayers";
+import type { PrayerRequest } from "@/lib/types";
+
+const session = Astro.locals.session;
+const client = new ApiClient(session);
+
+const search = Astro.url.searchParams.get("search") || "";
+const ordering = Astro.url.searchParams.get("ordering") || "-created_at";
+const page = Number(Astro.url.searchParams.get("page")) || 1;
+
+let prayers: PrayerRequest[] = [];
+let totalCount = 0;
+let error = "";
+
+try {
+  const result = await listPrayers(client, {
+    page,
+    page_size: 12,
+    search: search || undefined,
+    ordering,
+  });
+  prayers = result.results;
+  totalCount = result.count;
+} catch (err: any) {
+  error = err.detail || "Unable to load prayer requests.";
+}
+
+const totalPages = Math.ceil(totalCount / 12);
+---
+
+<BaseLayout
+  title="Prayer Feed"
+  description="Browse prayer requests from the community and pray for others."
+  breadcrumbs={[
+    { name: "Home", href: "/" },
+    { name: "Prayer Feed" },
+  ]}
+>
+  {page > 1 && (
+    <link slot="head" rel="prev" href={`/prayers?page=${page - 1}${search ? `&search=${search}` : ""}${ordering !== "-created_at" ? `&ordering=${ordering}` : ""}`} />
+  )}
+  {page < totalPages && (
+    <link slot="head" rel="next" href={`/prayers?page=${page + 1}${search ? `&search=${search}` : ""}${ordering !== "-created_at" ? `&ordering=${ordering}` : ""}`} />
+  )}
+  <div class="space-y-6">
+    <PageHeader
+      eyebrow="Community"
+      title="Prayer Feed"
+      description="Browse requests from the community and lift them up in prayer."
+    />
+
+    {/* Search & Filters */}
+    <div class="card p-4" id="search">
+      <form method="get" class="flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-(--color-text-muted)">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+          <input
+            type="text"
+            name="search"
+            value={search}
+            placeholder="Search prayers..."
+            class="input pl-10"
+          />
+        </div>
+        <select name="ordering" class="input w-full sm:w-auto sm:min-w-[180px]">
+          <option value="-created_at" selected={ordering === "-created_at"}>Newest first</option>
+          <option value="created_at" selected={ordering === "created_at"}>Oldest first</option>
+          <option value="-prayer_count" selected={ordering === "-prayer_count"}>Most prayed</option>
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm whitespace-nowrap">
+          Search
+        </button>
+      </form>
+    </div>
+
+    {/* Results */}
+    {error ? (
+      <ErrorState title="Unable to load" message={error} actionHref="/prayers" actionLabel="Retry" />
+    ) : prayers.length > 0 ? (
+      <>
+        <div class="grid gap-4 sm:grid-cols-2 stagger">
+          {prayers.map((prayer) => (
+            <PrayerCard prayer={prayer} />
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <Pagination
+            previousUrl={page > 1 ? `/prayers?page=${page - 1}&search=${search}&ordering=${ordering}` : null}
+            nextUrl={page < totalPages ? `/prayers?page=${page + 1}&search=${search}&ordering=${ordering}` : null}
+            current={page}
+            totalPages={totalPages}
+          />
+        )}
+      </>
+    ) : (
+      <EmptyState
+        title="No prayer requests found"
+        message={search ? "Try a different search term." : "Be the first to share a prayer request."}
+        actionHref="/prayers/create"
+        actionLabel="Create a request"
+      />
+    )}
+  </div>
+</BaseLayout>

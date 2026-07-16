@@ -1,0 +1,115 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  description="Privacy Policy for Prayer Wall, how we collect, use, and protect your information"
+  breadcrumbs={[{ name: "Home", href: "/" }, { name: "Privacy Policy" }]}
+>
+  <div class="space-y-6 max-w-3xl">
+    <PageHeader
+      eyebrow="Legal"
+      title="Privacy Policy"
+      description="Your privacy matters. This policy explains what information we collect, how we use it, and your rights."
+    />
+
+    <article class="prose prose-sm max-w-none text-(--color-text-muted)">
+      <section>
+        <h2 class="heading-serif text-xl font-semibold text-(--color-text)">1. Information We Collect</h2>
+        <p class="mt-2">We collect information you provide directly to us:</p>
+        <ul class="mt-2 list-disc list-inside space-y-1">
+          <li><strong>Registered accounts:</strong> Email address, password (hashed), first name, last name.</li>
+          <li><strong>Anonymous identities:</strong> Display name (optional) and a management token.</li>
+          <li><strong>Prayer requests:</strong> Title, description, tags, and visibility preference (public/private).</li>
+          <li><strong>Prayer activity:</strong> Records of prayers you have made for requests.</li>
+          <li><strong>Technical data:</strong> IP address, browser user agent (for security and abuse prevention).</li>
+        </ul>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="heading-serif text-xl font-semibold text-(--color-text)">2. How We Use Your Information</h2>
+        <p class="mt-2">We use your information to:</p>
+        <ul class="mt-2 list-disc list-inside space-y-1">
+          <li>Provide and maintain the Service</li>
+          <li>Authenticate and manage your account or anonymous identity</li>
+          <li>Display prayer requests and prayer activity</li>
+          <li>Send verification emails (registered accounts only)</li>
+          <li>Prevent abuse, spam, and security threats</li>
+          <li>Improve the Service (aggregated, anonymized analytics)</li>
+        </ul>
+        <p class="mt-2">We do <strong>not</strong> sell your personal information to third parties.</p>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="heading-serif text-xl font-semibold text-(--color-text)">3. Public vs. Private Content</h2>
+        <p class="mt-2">When you submit a prayer request, you choose whether it is <strong>public</strong> or <strong>private</strong>:</p>
+        <ul class="mt-2 list-disc list-inside space-y-1">
+          <li><strong>Public requests</strong> are visible to all visitors and may appear in search results, RSS feeds, and sitemaps.</li>
+          <li><strong>Private requests</strong> are only visible to you (via your account or management token) and to administrators.</li>
+        </ul>
+        <p class="mt-2">Your display name (or "Anonymous") is shown with public requests. Your email address is never displayed publicly.</p>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="heading-serif text-xl font-semibold text-(--color-text)">4. Data Retention</h2>
+        <ul class="mt-2 list-disc list-inside space-y-1">
+          <li>Registered account data is retained while your account is active.</li>
+          <li>Anonymous identities and their tokens expire after a period of inactivity (typically 90 days).</li>
+          <li>Prayer requests and prayer activity are retained indefinitely unless you delete them.</li>
+          <li>IP addresses and user agents are retained for up to 30 days for security purposes.</li>
+        </ul>
+        <p class="mt-2">You can delete your prayer requests at any time. Registered users can delete their account, which removes all associated personal data.</p>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="heading-serif text-xl font-semibold text-(--color-text)">5. Cookies and Local Storage</h2>
+        <p class="mt-2">We use cookies to maintain your session (authentication tokens). We do not use third-party tracking cookies, analytics cookies, or advertising cookies.</p>
+        <p class="mt-2">A <code>pw-theme</code> key in <code>localStorage</code> stores your light/dark mode preference locally in your browser.</p>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="heading-serif text-xl font-semibold text-(--color-text)">6. Third-Party Services</h2>
+        <p class="mt-2">The Service may load fonts from <strong>Google Fonts</strong> (fonts.googleapis.com / fonts.gstatic.com). This request may include your IP address. No other third-party services are used for analytics, advertising, or tracking.</p>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="heading-serif text-xl font-semibold text-(--color-text)">7. Security</h2>
+        <p class="mt-2">We implement reasonable security measures including HTTPS enforcement, secure cookies (HttpOnly, SameSite), Content Security Policy, and password hashing (bcrypt/argon2). However, no internet transmission is 100% secure.</p>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="heading-serif text-xl font-semibold text-(--color-text)">8. Your Rights</h2>
+        <p class="mt-2">Depending on your jurisdiction, you may have rights to:</p>
+        <ul class="mt-2 list-disc list-inside space-y-1">
+          <li>Access your personal data</li>
+          <li>Rectify inaccurate data</li>
+          <li>Erase your data (delete account/requests)</li>
+          <li>Restrict or object to processing</li>
+          <li>Data portability</li>
+        </ul>
+        <p class="mt-2">To exercise these rights, use the account management features in the Service or contact us.</p>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="heading-serif text-xl font-semibold text-(--color-text)">9. Children's Privacy</h2>
+        <p class="mt-2">The Service is not directed to children under 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us.</p>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="heading-serif text-xl font-semibold text-(--color-text)">10. Changes to This Policy</h2>
+        <p class="mt-2">We may update this Privacy Policy from time to time. We will post the new policy on this page with an updated effective date.</p>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="heading-serif text-xl font-semibold text-(--color-text)">11. Contact</h2>
+        <p class="mt-2">If you have questions about this Privacy Policy, please contact us through the platform or visit our <a href="/donate" class="underline hover:opacity-80">Support</a> page.</p>
+      </section>
+
+      <p class="mt-10 text-sm text-(--color-text-muted)">
+        Last updated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+      </p>
+    </article>
+  </div>
+</BaseLayout>

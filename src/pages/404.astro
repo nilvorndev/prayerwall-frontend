@@ -1,0 +1,17 @@
+---
+import BaseLayout from "../components/BaseLayout.astro";
+import ErrorState from "@/components/ui/ErrorState.astro";
+
+Astro.response.status = 404;
+---
+
+<BaseLayout title="Page Not Found" description="This page does not exist">
+  <section class="mx-auto max-w-lg py-16">
+    <ErrorState
+      title="Page not found"
+      message="The page you are looking for does not exist or has moved."
+      actionHref="/"
+      actionLabel="Back to home"
+    />
+  </section>
+</BaseLayout>

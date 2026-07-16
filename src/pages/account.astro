@@ -1,0 +1,33 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import AccountSummary from "@/components/AccountSummary.svelte";
+import ErrorState from "@/components/ui/ErrorState.astro";
+
+const session = Astro.locals.session;
+---
+
+<BaseLayout
+  title="Account"
+  description="Manage your Prayer Wall session"
+  robots="noindex, nofollow"
+  breadcrumbs={[
+    { name: "Home", href: "/" },
+    { name: "Account" },
+  ]}
+>
+  <div class="grid gap-6">
+    <PageHeader title="Account" description="Review your auth mode, update your profile, and manage tokens." />
+
+    {!session.isAuthenticated ? (
+      <ErrorState
+        title="No active session"
+        message="You are browsing as a guest. Log in or create an anonymous identity to manage an account."
+        actionHref="/auth/login"
+        actionLabel="Log in"
+      />
+    ) : (
+      <AccountSummary session={session} client:load />
+    )}
+  </div>
+</BaseLayout>

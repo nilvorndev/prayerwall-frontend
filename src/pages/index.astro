@@ -1,0 +1,398 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PrayerCard from "@/components/prayers/PrayerCard.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
+import ErrorState from "@/components/ui/ErrorState.astro";
+import { ApiClient } from "@/lib/api/client";
+import { listPrayers } from "@/lib/api/prayers";
+import type { PrayerRequest } from "@/lib/types";
+
+const session = Astro.locals.session;
+const client = new ApiClient(session);
+let prayers: PrayerRequest[] = [];
+let loadError = "";
+
+try {
+  const result = await listPrayers(client, { page: 1, page_size: 4, ordering: "-created_at" });
+  prayers = result.results;
+} catch (error: any) {
+  loadError = error.detail || "Unable to load recent prayer requests.";
+}
+---
+
+<BaseLayout
+  title="Prayer Wall - Share Prayer Requests & Pray Together"
+  description="A private and anonymous prayer platform. Share your prayer requests with a supportive community and pray for others. Join thousands of believers in prayer."
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Prayer Wall",
+    url: "https://prayerwall.space",
+    logo: "https://prayerwall.space/logo.png",
+    description: "A private and anonymous prayer platform for sharing prayer requests and praying for others.",
+    sameAs: [],
+  })}></script>
+  <div class="space-y-20 md:space-y-28">
+    {/* Hero */}
+    <section class="relative pt-8 md:pt-16">
+      <div class="absolute inset-x-0 -top-20 flex justify-center pointer-events-none">
+        <div class="h-[32rem] w-[48rem] rounded-full opacity-20 blur-[120px] bg-(--color-primary)"></div>
+      </div>
+      <div class="relative mx-auto max-w-2xl text-center">
+        <span
+          class="inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--color-primary)_15%,var(--color-line))] bg-[color-mix(in_srgb,var(--color-primary)_5%,var(--color-bg-elevated))] px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-(--color-primary)"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-(--color-primary)"></span>
+          A sacred space for prayer
+        </span>
+
+        <h1 class="heading-display mt-6 text-4xl sm:text-5xl md:text-6xl text-(--color-text) text-balance">
+          Share Your Burdens.
+          <span class="text-(--color-primary)">Pray Together.</span>
+        </h1>
+
+        <p class="mx-auto mt-5 max-w-xl text-base leading-7 text-(--color-text-secondary) md:text-lg">
+          A private platform where you can share prayer requests and lift others up in prayer. Anonymous, secure, and
+          built on faith.
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <a href="/prayers/create" class="btn btn-primary btn-lg gap-2.5">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"
+              ></path>
+            </svg>
+            Submit a Prayer Request
+          </a>
+          <a href="/prayers" class="btn btn-outline btn-lg"> Browse Prayer Requests </a>
+        </div>
+
+        <div class="mt-6 flex items-center justify-center gap-6 text-xs text-(--color-text-muted)">
+          <span class="inline-flex items-center gap-1.5">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-(--color-success)"
+            >
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            Anonymous option
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-(--color-success)"
+            >
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Private &amp; secure
+          </span>
+        </div>
+      </div>
+    </section>
+
+    {/* How It Works */}
+    <section>
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-(--color-primary)">How It Works</p>
+        <h2 class="heading-display mt-3 text-3xl sm:text-4xl text-(--color-text)">Three Simple Steps</h2>
+        <p class="mt-3 text-sm leading-7 text-(--color-text-secondary) md:text-base">
+          Sharing your heart with a community of believers has never been easier.
+        </p>
+      </div>
+
+      <div class="mt-12 grid gap-6 md:grid-cols-3 stagger">
+        <div class="card p-6 sm:p-7 text-center">
+          <div
+            class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--color-primary)_8%,var(--color-surface))] text-(--color-primary)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="heading-serif mt-4 text-lg font-semibold text-(--color-text)">Share Your Prayer Request</h3>
+          <p class="mt-2 text-sm leading-6 text-(--color-text-secondary)">
+            Write your prayer request publicly or privately. Share anonymously or as a registered member.
+          </p>
+        </div>
+
+        <div class="card p-6 sm:p-7 text-center">
+          <div
+            class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--color-accent)_8%,var(--color-surface))] text-(--color-accent-dark)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="heading-serif mt-4 text-lg font-semibold text-(--color-text)">Others Pray</h3>
+          <p class="mt-2 text-sm leading-6 text-(--color-text-secondary)">
+            Community members pray for your requests. Each prayer is counted so you can see the support growing.
+          </p>
+        </div>
+
+        <div class="card p-6 sm:p-7 text-center">
+          <div
+            class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--color-success)_8%,var(--color-surface))] text-(--color-success)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <h3 class="heading-serif mt-4 text-lg font-semibold text-(--color-text)">Find Comfort</h3>
+          <p class="mt-2 text-sm leading-6 text-(--color-text-secondary)">
+            Experience the strength of community prayer. Return to see who has prayed and know you are not alone.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {/* Features */}
+    <section>
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="text-xs font-semibold uppercase tracking-widest text-(--color-primary)">Why Prayer Wall</p>
+        <h2 class="heading-display mt-3 text-3xl sm:text-4xl text-(--color-text)">Built With Care</h2>
+        <p class="mt-3 text-sm leading-7 text-(--color-text-secondary) md:text-base">
+          Every feature is designed to create a safe, respectful environment for shared prayer.
+        </p>
+      </div>
+
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 stagger">
+        <div class="card p-5">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--color-primary)_8%,var(--color-surface))] text-(--color-primary)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <h3 class="heading-serif mt-3 text-base font-semibold text-(--color-text)">Private &amp; Secure</h3>
+          <p class="mt-1.5 text-sm leading-6 text-(--color-text-secondary)">
+            Choose public or private requests. Your identity stays protected.
+          </p>
+        </div>
+
+        <div class="card p-5">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--color-success)_8%,var(--color-surface))] text-(--color-success)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <h3 class="heading-serif mt-3 text-base font-semibold text-(--color-text)">Community</h3>
+          <p class="mt-1.5 text-sm leading-6 text-(--color-text-secondary)">
+            Join a community that uplifts one another through collective prayer.
+          </p>
+        </div>
+
+        <div class="card p-5">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--color-accent)_8%,var(--color-surface))] text-(--color-accent-dark)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <h3 class="heading-serif mt-3 text-base font-semibold text-(--color-text)">Anonymous</h3>
+          <p class="mt-1.5 text-sm leading-6 text-(--color-text-secondary)">
+            Post without revealing your identity. Your privacy is always protected.
+          </p>
+        </div>
+
+        <div class="card p-5">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--color-info)_8%,var(--color-surface))] text-(--color-info)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="heading-serif mt-3 text-base font-semibold text-(--color-text)">Pray for Others</h3>
+          <p class="mt-1.5 text-sm leading-6 text-(--color-text-secondary)">
+            Browse requests and pray for others. Every prayer makes a difference.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {/* Recent Prayers */}
+    <section class="space-y-6">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-(--color-primary)">Community</p>
+          <h2 class="heading-display mt-2 text-2xl sm:text-3xl text-(--color-text)">Recent Prayer Requests</h2>
+          <p class="mt-1.5 text-sm text-(--color-text-secondary)">Latest requests shared by the community.</p>
+        </div>
+        <a href="/prayers" class="btn btn-outline btn-sm shrink-0">
+          View all
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m9 18 6-6-6-6"></path>
+          </svg>
+        </a>
+      </div>
+
+      {
+        loadError ? (
+          <ErrorState title="Unable to load" message={loadError} actionHref="/prayers" actionLabel="Open requests" />
+        ) : prayers.length > 0 ? (
+          <div class="grid gap-4 sm:grid-cols-2 stagger">
+            {prayers.map((prayer) => (
+              <PrayerCard prayer={prayer} />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="No requests yet"
+            message="Be the first to share a prayer request."
+            actionHref="/prayers/create"
+            actionLabel="Create a request"
+          />
+        )
+      }
+    </section>
+
+    {/* Bottom CTA */}
+    <section
+      class="card relative overflow-hidden p-8 sm:p-12 text-center bg-[color-mix(in_srgb,var(--color-primary)_4%,var(--color-bg-elevated))]"
+    >
+      <div class="relative mx-auto max-w-lg">
+        <span
+          class="inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--color-primary)_15%,var(--color-line))] bg-[color-mix(in_srgb,var(--color-primary)_5%,var(--color-bg-elevated))] px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-(--color-primary)"
+        >
+          Get Started
+        </span>
+        <h2 class="heading-display mt-5 text-3xl sm:text-4xl text-(--color-text) text-balance">
+          Ready to Share Your Prayer Request?
+        </h2>
+        <p class="mx-auto mt-4 max-w-md text-sm leading-7 text-(--color-text-secondary) md:text-base">
+          Join our community of believers. Whether you have a request to share or want to pray for others, your presence
+          makes a difference.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <a href="/prayers/create" class="btn btn-primary btn-lg"> Submit a Prayer Request </a>
+          <a href="/auth/register" class="btn btn-outline btn-lg"> Create Account </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
