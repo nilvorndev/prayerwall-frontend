@@ -1,0 +1,52 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import PrayerManager from "@/components/PrayerManager.svelte";
+import ErrorState from "@/components/ui/ErrorState.astro";
+import { ApiClient } from "@/lib/api/client";
+import { listMyPrayerRequests } from "@/lib/api/prayers";
+import type { PrayerRequest } from "@/lib/types";
+
+const session = Astro.locals.session;
+const client = new ApiClient(session);
+let prayers: PrayerRequest[] = [];
+let error = "";
+
+if (session.isAuthenticated) {
+  try {
+    const result = await listMyPrayerRequests(client);
+    prayers = result.results;
+  } catch (err: any) {
+    error = err.detail || "Unable to load your requests.";
+  }
+}
+---
+
+<BaseLayout
+  title="My Requests"
+  description="Manage your prayer requests"
+  robots="noindex, nofollow"
+  breadcrumbs={[
+    { name: "Home", href: "/" },
+    { name: "My Requests" },
+  ]}
+>
+  <div class="space-y-6">
+    <PageHeader title="My requests" description="Edit, delete, or review the status of your prayer requests.">
+      <div slot="actions">
+        <a href="/prayers/create" class="btn btn-primary btn-sm">Create request</a>
+      </div>
+    </PageHeader>
+
+    {!session.isAuthenticated ? (
+      <ErrorState title="Authentication required" message="Log in or create an anonymous identity to manage your requests." actionHref="/auth/login" actionLabel="Log in" />
+    ) : error ? (
+      <ErrorState title="Unable to load requests" message={error} actionHref="/my/requests" actionLabel="Retry" />
+    ) : (
+      <div class="card p-4 md:p-6">
+        <PrayerManager prayers={prayers} allowEdit={true} allowDelete={true}
+          emptyLabel="You have not created any prayer requests yet." client:load />
+      </div>
+    )}
+  </div>
+</BaseLayout>

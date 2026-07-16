@@ -1,0 +1,49 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import PrayerForm from "@/components/PrayerForm.svelte";
+import ErrorState from "@/components/ui/ErrorState.astro";
+
+const session = Astro.locals.session;
+---
+
+<BaseLayout
+  title="Create Prayer Request"
+  description="Create a new prayer request"
+  breadcrumbs={[
+    { name: "Home", href: "/" },
+    { name: "Prayers", href: "/prayers" },
+    { name: "Create Request" },
+  ]}
+>
+  <div class="space-y-6">
+    <PageHeader title="Create request" description="Share a prayer request. It will be moderated before appearing publicly." />
+
+    {!session.isAuthenticated ? (
+      <ErrorState
+        title="Authentication required"
+        message="Create a registered account or an anonymous identity before submitting a request."
+        actionHref="/auth/anonymous"
+        actionLabel="Create anonymous identity"
+      />
+    ) : session.isBlocked ? (
+      <ErrorState
+        title="Account blocked"
+        message="This identity is blocked and cannot create new requests."
+        actionHref="/account"
+        actionLabel="View account"
+      />
+    ) : !session.isVerified && session.mode === "registered" ? (
+      <ErrorState
+        title="Email verification required"
+        message="Registered accounts must verify their email before creating prayer requests."
+        actionHref={`/auth/verify?email=${encodeURIComponent(session.user?.email || "")}`}
+        actionLabel="Verify email"
+      />
+    ) : (
+      <div class="card p-6">
+        <PrayerForm mode="create" submitLabel="Publish request" redirectTo="/my/requests?created=1" client:load />
+      </div>
+    )}
+  </div>
+</BaseLayout>

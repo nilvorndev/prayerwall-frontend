@@ -1,0 +1,74 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import PrayerHistory from "@/components/prayers/PrayerHistory.svelte";
+import ErrorState from "@/components/ui/ErrorState.astro";
+import { ApiClient } from "@/lib/api/client";
+import { listMyPrayers } from "@/lib/api/prayers";
+import type { Prayer } from "@/lib/types";
+
+const session = Astro.locals.session;
+const client = new ApiClient(session);
+let prayers: Prayer[] = [];
+let error = "";
+
+if (session.isAuthenticated) {
+  try {
+    const result = await listMyPrayers(client);
+    prayers = result.results;
+  } catch (err: any) {
+    error = err.detail || "Unable to load your prayer activity.";
+  }
+}
+
+const activityCount = prayers.length;
+---
+
+<BaseLayout
+  title="My Prayers"
+  description="Review your prayer activity"
+  robots="noindex, nofollow"
+  breadcrumbs={[
+    { name: "Home", href: "/" },
+    { name: "My Prayers" },
+  ]}
+>
+  <div class="space-y-6">
+    <PageHeader
+      eyebrow="Personal"
+      title="My prayers"
+      description="Review the requests you have prayed for and remove records when supported by the backend."
+    />
+
+    {!session.isAuthenticated ? (
+      <ErrorState
+        title="Authentication required"
+        message="Log in or create an anonymous identity to view your prayer activity."
+        actionHref="/auth/login"
+        actionLabel="Log in"
+      />
+    ) : error ? (
+      <ErrorState
+        title="Unable to load prayer activity"
+        message={error}
+        actionHref="/my/prayers"
+        actionLabel="Retry"
+      />
+    ) : (
+      <div class="space-y-4">
+        <div class="card p-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Activity summary</p>
+            <p class="mt-2 text-3xl font-semibold text-(--color-text)">{activityCount}</p>
+            <p class="mt-1 text-sm text-(--color-text-secondary)">Prayer entries you have recorded.</p>
+          </div>
+          <a href="/prayers" class="btn btn-outline btn-sm self-start">Browse requests</a>
+        </div>
+
+        <div class="card p-4 md:p-6">
+          <PrayerHistory prayers={prayers} client:load />
+        </div>
+      </div>
+    )}
+  </div>
+</BaseLayout>
