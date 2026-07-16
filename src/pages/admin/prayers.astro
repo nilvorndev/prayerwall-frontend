@@ -1,0 +1,46 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import PrayerManager from "@/components/PrayerManager.svelte";
+import AdminGuard from "@/components/admin/AdminGuard.astro";
+import ErrorState from "@/components/ui/ErrorState.astro";
+import { ApiClient } from "@/lib/api/client";
+import { listPrayers } from "@/lib/api/prayers";
+import type { PrayerRequest } from "@/lib/types";
+
+const session = Astro.locals.session;
+const client = new ApiClient(session);
+let prayers: PrayerRequest[] = [];
+let error = "";
+
+if (session.isAdmin) {
+  try {
+    const result = await listPrayers(client, { page_size: 25, ordering: "-created_at" });
+    prayers = result.results;
+  } catch (err: any) {
+    error = err.detail || "Unable to load requests.";
+  }
+}
+---
+
+<BaseLayout title="Prayer requests" description="Browse all prayer requests">
+  <AdminGuard session={session}>
+    <div class="space-y-6">
+      <PageHeader title="All requests" description="Browse all prayer requests." />
+
+      {error ? (
+        <ErrorState title="Unable to load requests" message={error} actionHref="/admin/prayers" actionLabel="Retry" />
+      ) : (
+        <div class="card p-4 md:p-6">
+          <PrayerManager
+            prayers={prayers}
+            allowEdit={false}
+            allowDelete={true}
+            emptyLabel="No requests found."
+            client:load
+          />
+        </div>
+      )}
+    </div>
+  </AdminGuard>
+</BaseLayout>

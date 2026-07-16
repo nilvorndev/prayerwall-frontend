@@ -1,0 +1,97 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import Badge from "@/components/ui/Badge.astro";
+import AdminGuard from "@/components/admin/AdminGuard.astro";
+import ErrorState from "@/components/ui/ErrorState.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
+import { ApiClient } from "@/lib/api/client";
+import { listAnonymousIdentities } from "@/lib/api/admin";
+import { formatDateTime } from "@/lib/utils/format";
+import type { AnonymousUser } from "@/lib/types";
+
+const session = Astro.locals.session;
+const client = new ApiClient(session);
+let identities: AnonymousUser[] = [];
+let error = "";
+
+if (session.isAdmin) {
+  try {
+    const result = await listAnonymousIdentities(client, { page_size: 25, ordering: "-created_at" });
+    identities = result.results;
+  } catch (err: any) {
+    error = err.detail || "Unable to load anonymous identities.";
+  }
+}
+
+const blockedCount = identities.filter((identity) => identity.is_blocked).length;
+---
+
+<BaseLayout title="Anonymous identities" description="Browse anonymous identities">
+  <AdminGuard session={session}>
+    <div class="space-y-6">
+      <PageHeader
+        eyebrow="Administration"
+        title="Anonymous identities"
+        description="Review the anonymous identities used for request management."
+      />
+
+      <section class="grid gap-3 sm:grid-cols-3">
+        <div class="card p-4">
+          <p class="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Loaded</p>
+          <p class="mt-2 text-3xl font-semibold text-(--color-text)">{identities.length}</p>
+          <p class="mt-1 text-sm text-(--color-text-secondary)">Anonymous identities in the current page.</p>
+        </div>
+        <div class="card p-4">
+          <p class="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Blocked</p>
+          <p class="mt-2 text-3xl font-semibold text-(--color-text)">{blockedCount}</p>
+          <p class="mt-1 text-sm text-(--color-text-secondary)">Identities prevented from acting.</p>
+        </div>
+        <div class="card p-4">
+          <p class="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Scope</p>
+          <p class="mt-2 text-3xl font-semibold text-(--color-text)">Token</p>
+          <p class="mt-1 text-sm text-(--color-text-secondary)">Identity state tied to anonymous auth tokens.</p>
+        </div>
+      </section>
+
+      {error ? (
+        <ErrorState title="Unable to load identities" message={error} actionHref="/admin/anonymous" actionLabel="Retry" />
+      ) : identities.length === 0 ? (
+        <EmptyState title="No identities loaded" message="The backend did not return any anonymous identities for this request." />
+      ) : (
+        <div class="card overflow-hidden p-0">
+          <div class="overflow-x-auto">
+            <table class="min-w-full border-separate border-spacing-0 text-left text-sm">
+              <thead>
+                <tr>
+                  <th class="table-header">Identity</th>
+                  <th class="table-header">Status</th>
+                  <th class="table-header">Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                {identities.map((identity) => (
+                  <tr>
+                    <td class="table-cell">
+                      <p class="font-semibold text-(--color-text)">{identity.display_name}</p>
+                      <p class="mt-1 max-w-[18rem] truncate text-sm" title={identity.id}>{identity.id}</p>
+                    </td>
+                    <td class="table-cell">
+                      <div class="flex flex-wrap gap-1.5">
+                        <Badge tone={identity.is_blocked ? "danger" : "neutral"}>{identity.is_blocked ? "Blocked" : "Active"}</Badge>
+                        <Badge tone="info">Anonymous</Badge>
+                      </div>
+                    </td>
+                    <td class="table-cell text-(--color-text-secondary)">
+                      {formatDateTime(identity.created_at)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  </AdminGuard>
+</BaseLayout>

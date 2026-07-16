@@ -1,0 +1,103 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import Badge from "@/components/ui/Badge.astro";
+import AdminGuard from "@/components/admin/AdminGuard.astro";
+import ErrorState from "@/components/ui/ErrorState.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
+import { ApiClient } from "@/lib/api/client";
+import { listUsers } from "@/lib/api/admin";
+import { formatDateTime } from "@/lib/utils/format";
+import { getDisplayName } from "@/lib/auth/session";
+import type { User } from "@/lib/types";
+
+const session = Astro.locals.session;
+const client = new ApiClient(session);
+let users: User[] = [];
+let error = "";
+
+if (session.isAdmin) {
+  try {
+    const result = await listUsers(client, { page_size: 25, ordering: "-created_at" });
+    users = result.results;
+  } catch (err: any) {
+    error = err.detail || "Unable to load users.";
+  }
+}
+
+const blockedCount = users.filter((user) => user.is_blocked).length;
+const verifiedCount = users.filter((user) => user.is_verified).length;
+---
+
+<BaseLayout title="Users" description="Browse registered users">
+  <AdminGuard session={session}>
+    <div class="space-y-6">
+      <PageHeader
+        eyebrow="Administration"
+        title="Users"
+        description="Browse registered user accounts and inspect verification or block status."
+      />
+
+      <section class="grid gap-3 sm:grid-cols-3">
+        <div class="card p-4">
+          <p class="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Loaded</p>
+          <p class="mt-2 text-3xl font-semibold text-(--color-text)">{users.length}</p>
+          <p class="mt-1 text-sm text-(--color-text-secondary)">Registered accounts in the current page.</p>
+        </div>
+        <div class="card p-4">
+          <p class="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Verified</p>
+          <p class="mt-2 text-3xl font-semibold text-(--color-text)">{verifiedCount}</p>
+          <p class="mt-1 text-sm text-(--color-text-secondary)">Accounts with verified email addresses.</p>
+        </div>
+        <div class="card p-4">
+          <p class="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Blocked</p>
+          <p class="mt-2 text-3xl font-semibold text-(--color-text)">{blockedCount}</p>
+          <p class="mt-1 text-sm text-(--color-text-secondary)">Accounts prevented from acting.</p>
+        </div>
+      </section>
+
+      {error ? (
+        <ErrorState title="Unable to load users" message={error} actionHref="/admin/users" actionLabel="Retry" />
+      ) : users.length === 0 ? (
+        <EmptyState title="No users loaded" message="The backend did not return any users for this request." />
+      ) : (
+        <div class="card overflow-hidden p-0">
+          <div class="overflow-x-auto">
+            <table class="min-w-full border-separate border-spacing-0 text-left text-sm">
+              <thead>
+                <tr>
+                  <th class="table-header">User</th>
+                  <th class="table-header">Status</th>
+                  <th class="table-header">Role</th>
+                  <th class="table-header">Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr>
+                    <td class="table-cell">
+                      <p class="font-semibold text-(--color-text)">{getDisplayName(user)}</p>
+                      <p class="mt-1 text-sm text-(--color-text-secondary)">{user.email}</p>
+                    </td>
+                    <td class="table-cell">
+                      <div class="flex flex-wrap gap-1.5">
+                        <Badge tone={user.is_verified ? "success" : "warning"}>{user.is_verified ? "Verified" : "Unverified"}</Badge>
+                        <Badge tone={user.is_blocked ? "danger" : "neutral"}>{user.is_blocked ? "Blocked" : "Active"}</Badge>
+                      </div>
+                    </td>
+                    <td class="table-cell">
+                      <Badge tone={user.is_admin || user.is_staff ? "accent" : "neutral"}>{user.is_admin || user.is_staff ? "Admin" : "User"}</Badge>
+                    </td>
+                    <td class="table-cell text-(--color-text-secondary)">
+                      {formatDateTime(user.created_at)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  </AdminGuard>
+</BaseLayout>

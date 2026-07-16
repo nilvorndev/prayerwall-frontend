@@ -1,0 +1,33 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import AdminGuard from "@/components/admin/AdminGuard.astro";
+
+const session = Astro.locals.session;
+---
+
+<BaseLayout title="Admin" description="Admin dashboard">
+  <AdminGuard session={session}>
+    <div class="space-y-6">
+      <PageHeader title="Admin dashboard" description="Manage users, anonymous identities, and prayer requests." />
+
+      <section class="grid gap-4 md:grid-cols-3">
+        <a href="/admin/prayers" class="card card-interactive p-5 group">
+          <p class="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Prayers</p>
+          <p class="mt-1 text-3xl font-semibold text-(--color-text) group-hover:text-(--color-primary) transition-colors">Browse</p>
+          <p class="mt-1 text-sm text-(--color-text-secondary)">All prayer requests</p>
+        </a>
+        <a href="/admin/users" class="card card-interactive p-5 group">
+          <p class="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Users</p>
+          <p class="mt-1 text-3xl font-semibold text-(--color-text) group-hover:text-(--color-primary) transition-colors">Browse</p>
+          <p class="mt-1 text-sm text-(--color-text-secondary)">Registered accounts</p>
+        </a>
+        <a href="/admin/anonymous" class="card card-interactive p-5 group">
+          <p class="text-xs font-semibold uppercase tracking-wider text-(--color-text-muted)">Anonymous</p>
+          <p class="mt-1 text-3xl font-semibold text-(--color-text) group-hover:text-(--color-primary) transition-colors">Browse</p>
+          <p class="mt-1 text-sm text-(--color-text-secondary)">Anonymous identities</p>
+        </a>
+      </section>
+    </div>
+  </AdminGuard>
+</BaseLayout>
