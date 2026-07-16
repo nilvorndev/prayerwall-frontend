@@ -1,0 +1,23 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import RegisterForm from "@/components/RegisterForm.svelte";
+---
+
+<BaseLayout title="Register" description="Create a Prayer Wall account">
+  <div class="mx-auto max-w-lg space-y-6">
+    <PageHeader
+      title="Register"
+      description="Create a registered account. Verification is required before creating requests."
+    />
+
+    <div class="card p-6">
+      <RegisterForm redirectTo="/auth/verify" client:load />
+    </div>
+
+    <div class="card p-5 text-center space-y-3">
+      <p class="text-sm text-(--color-text-secondary)">Prefer anonymous?</p>
+      <a href="/auth/anonymous" class="btn btn-outline btn-sm">Use anonymous access</a>
+    </div>
+  </div>
+</BaseLayout>

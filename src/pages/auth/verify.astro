@@ -1,0 +1,28 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import VerifyForm from "@/components/VerifyForm.svelte";
+
+const email = Astro.url.searchParams.get("email") || "";
+const verifyToken = Astro.url.searchParams.get("token") || "";
+---
+
+<BaseLayout title="Verify email" description="Confirm your email address">
+  <div class="mx-auto max-w-lg space-y-6">
+    <PageHeader
+      title="Verify email"
+      description="Click the link from your email, or enter the 6-digit code sent to your inbox."
+    />
+
+    <div class="card p-6">
+      <VerifyForm initialEmail={email} initialToken={verifyToken} client:load />
+    </div>
+
+    <div class="card p-5">
+      <h3 class="text-sm font-semibold text-(--color-text)">Why verify?</h3>
+      <p class="mt-2 text-sm leading-6 text-(--color-text-secondary)">
+        Verification confirms your email and unlocks request creation. Unverified accounts cannot submit prayer requests.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

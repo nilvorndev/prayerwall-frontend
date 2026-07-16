@@ -1,0 +1,27 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import AnonymousForm from "@/components/AnonymousForm.svelte";
+---
+
+<BaseLayout title="Anonymous access" description="Create or refresh an anonymous identity">
+  <div class="mx-auto max-w-lg space-y-6">
+    <PageHeader
+      title="Anonymous access"
+      description="Anonymous identities are separate from registered accounts. Create or refresh one here."
+    />
+
+    <div class="card p-6">
+      <AnonymousForm redirectTo="/account" client:load />
+    </div>
+
+    <div class="card p-5">
+      <h3 class="text-sm font-semibold text-(--color-text)">How it works</h3>
+      <ul class="mt-3 space-y-2 text-sm leading-6 text-(--color-text-secondary)">
+        <li>Create an identity with an optional display name.</li>
+        <li>Use the token to submit and manage requests.</li>
+        <li>Refresh or discard your token from the account page.</li>
+      </ul>
+    </div>
+  </div>
+</BaseLayout>

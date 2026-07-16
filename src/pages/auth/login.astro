@@ -1,0 +1,28 @@
+---
+import BaseLayout from "@/components/BaseLayout.astro";
+import PageHeader from "@/components/ui/PageHeader.astro";
+import LoginForm from "@/components/LoginForm.svelte";
+
+const next = Astro.url.searchParams.get("next") || "/account";
+---
+
+<BaseLayout title="Log in" description="Log in to your Prayer Wall account">
+  <div class="mx-auto max-w-lg space-y-6">
+    <PageHeader
+      title="Log in"
+      description="Use your registered account to manage requests and your profile."
+    />
+
+    <div class="card p-6">
+      <LoginForm redirectTo={next} client:load />
+    </div>
+
+    <div class="card p-5 text-center space-y-3">
+      <p class="text-sm text-(--color-text-secondary)">Don't have an account?</p>
+      <div class="flex flex-col sm:flex-row gap-2 justify-center">
+        <a href="/auth/register" class="btn btn-outline btn-sm">Register</a>
+        <a href="/auth/anonymous" class="btn btn-outline btn-sm">Anonymous access</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
