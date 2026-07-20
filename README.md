@@ -106,8 +106,23 @@ That proxy layer is what sets and clears auth cookies securely.
 
 ## Deployment Notes
 
-- Build output is server-rendered, so the deployment target must support Astro SSR.
-- The configured adapter is `@astrojs/node` in standalone mode.
+- The app deploys to **Cloudflare Workers** via `@astrojs/cloudflare` adapter.
+- `wrangler.toml` defines the worker name, KV bindings, environment variables, and compatibility flags.
+- Build output is server-rendered (`dist/server/_worker.js`). The `dist/server/wrangler.json` is auto-generated at build time.
+
+### Commands
+
+```bash
+npm run preview          # local dev with wrangler (uses .dev.vars)
+npm run deploy           # build + deploy to Cloudflare Workers
+npm run cf-typegen       # regenerate Cloudflare env types after binding changes
+```
+
+### Environment
+
+- Production vars are set in `wrangler.toml` `[vars]` section.
+- Local dev vars are in `.dev.vars` (not committed).
+- Secrets (API keys, tokens) must be set via `npx wrangler secret put <KEY>`.
 - Ensure `PUBLIC_API_BASE_URL` points at the deployed backend API.
 - If the backend runs behind different CORS or auth rules in production, keep the Astro proxy routes and avoid calling the backend directly from browser code.
 

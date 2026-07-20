@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "include": ["/*"],
+  "exclude": [
+    "/_astro/*",
+    "/logo.png",
+    "/favicon.svg",
+    "/og-image.png",
+    "/og-image.svg",
+    "/manifest.json",
+    "/robots.txt"
+  ]
+}

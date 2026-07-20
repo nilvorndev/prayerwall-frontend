@@ -1,7 +1,10 @@
-export const API_BASE_URL =
-  import.meta.env.PUBLIC_API_BASE_URL ||
-  import.meta.env.PUBLIC_API_URL ||
-  "http://localhost:8000";
+const rawApiUrl = import.meta.env.PUBLIC_API_BASE_URL || import.meta.env.PUBLIC_API_URL;
+
+if (import.meta.env.PROD && !rawApiUrl) {
+  throw new Error("PUBLIC_API_BASE_URL is not set. Define it in wrangler.toml [vars] or Cloudflare dashboard.");
+}
+
+export const API_BASE_URL = rawApiUrl || "http://localhost:8000";
 
 export const COOKIE_NAMES = {
   registeredToken: "pw_registered_token",
