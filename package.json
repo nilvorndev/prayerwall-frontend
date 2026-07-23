@@ -6,14 +6,16 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "npm run build && wrangler dev",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
     "format": "prettier --write src/",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate-types": "wrangler types",
+    "deploy": "npm run build && wrangler deploy"
   },
   "lint-staged": {
     "*.{astro,svelte,ts,mjs}": [
@@ -25,6 +27,7 @@
     ]
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.1.4",
     "@astrojs/node": "^11.0.0",
     "@astrojs/svelte": "^9.0.0",
     "@tailwindcss/vite": "^4.0.0",
@@ -49,6 +52,7 @@
     "svelte-eslint-parser": "^1.6.1",
     "typescript": "^5.5.0",
     "typescript-eslint": "^8.60.0",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.9",
+    "wrangler": "^4.113.0"
   }
 }
