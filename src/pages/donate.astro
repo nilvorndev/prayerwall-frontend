@@ -7,6 +7,23 @@ import BaseLayout from "@/components/BaseLayout.astro";
   description="Support the Prayer Wall project maintainer, help us keep this platform up, private, and available to everyone."
   breadcrumbs={[{ name: "Home", href: "/" }, { name: "Donate" }]}
 >
+  <script
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: "Donate - Prayer Wall",
+      description:
+        "Support the Prayer Wall project maintainer, help us keep this platform up, private, and available to everyone.",
+      url: "https://prayerwall.space/donate",
+      isPartOf: {
+        "@type": "WebSite",
+        name: "Prayer Wall",
+        url: "https://prayerwall.space",
+      },
+    })}
+  />
   <div class="space-y-12">
     {/* Hero */}
     <section class="relative pt-4 md:pt-8">
@@ -181,7 +198,7 @@ import BaseLayout from "@/components/BaseLayout.astro";
         </a>
 
         <a
-          href="buymeacoffee.com/omid369"
+          href="https://buymeacoffee.com/omid369"
           target="_blank"
           rel="noopener noreferrer"
           class="card card-interactive p-5 flex items-center gap-4 group"
