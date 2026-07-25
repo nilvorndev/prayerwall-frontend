@@ -86,10 +86,10 @@ const pageImage = image || "/og-image.png";
     <link rel="alternate" type="application/rss+xml" title="Prayer Wall RSS Feed" href={`${siteUrl}/rss.xml`} />
 
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4GB55V7QDD"></script>
-    <script>
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-4GB55V7QDD"></script>
+    <script is:inline>
       window.dataLayer = window.dataLayer || [];
-      function gtag(...args: unknown[]) {
+      function gtag(...args) {
         dataLayer.push(args);
       }
       gtag("js", new Date());
