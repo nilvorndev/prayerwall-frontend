@@ -3,5 +3,7 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 Disallow: /auth/
+Disallow: /dashboard/
+Disallow: /my/
 
 Sitemap: https://prayerwall.space/sitemap.xml
