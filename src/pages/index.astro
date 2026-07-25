@@ -24,15 +24,18 @@ try {
   title="Prayer Wall - Share Prayer Requests & Pray Together"
   description="A private and anonymous prayer platform. Share your prayer requests with a supportive community and pray for others. Join thousands of believers in prayer."
 >
-  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Prayer Wall",
-    url: "https://prayerwall.space",
-    logo: "https://prayerwall.space/logo.png",
-    description: "A private and anonymous prayer platform for sharing prayer requests and praying for others.",
-    sameAs: [],
-  })}></script>
+  <script
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Prayer Wall",
+      url: "https://prayerwall.space",
+      logo: "https://prayerwall.space/logo.png",
+      description: "A private and anonymous prayer platform for sharing prayer requests and praying for others.",
+    })}
+  />
   <div class="space-y-20 md:space-y-28">
     {/* Hero */}
     <section class="relative pt-8 md:pt-16">
